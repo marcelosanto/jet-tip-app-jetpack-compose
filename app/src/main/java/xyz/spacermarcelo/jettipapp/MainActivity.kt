@@ -52,7 +52,6 @@ fun MyApp(content: @Composable () -> Unit) {
     }
 }
 
-
 @Composable
 fun TopHeader(totalPerPerson: Double = 132.0) {
     Surface(
@@ -122,6 +121,12 @@ fun BillForm(
         mutableStateOf(0f)
     }
 
+    val splitByState = remember {
+        mutableStateOf(1)
+    }
+
+    val range = IntRange(start = 1, endInclusive = 100)
+
     Column(
         modifier = Modifier.padding(12.dp),
         verticalArrangement = Arrangement.Center,
@@ -173,10 +178,14 @@ fun BillForm(
                         ) {
                             RoundIconButton(
                                 imageVector = Icons.Default.Remove,
-                                onClick = { /*TODO*/ })
+                                onClick = {
+                                    splitByState.value =
+                                        if (splitByState.value > 1) splitByState.value - 1
+                                        else 1
+                                })
 
                             Text(
-                                text = "5",
+                                text = "${splitByState.value}",
                                 modifier = Modifier
                                     .align(Alignment.CenterVertically)
                                     .padding(start = 9.dp, end = 9.dp)
@@ -184,7 +193,11 @@ fun BillForm(
 
                             RoundIconButton(
                                 imageVector = Icons.Default.Add,
-                                onClick = { /*TODO*/ })
+                                onClick = {
+                                    if (splitByState.value < range.last) {
+                                        splitByState.value = splitByState.value + 1
+                                    }
+                                })
                         }
                     }
 
