@@ -58,6 +58,7 @@ fun TopHeader(totalPerPerson: Double = 132.0) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(15.dp)
             .height(150.dp)
             .clip(shape = RoundedCornerShape(corner = CornerSize(12.dp))),
         color = Color(0xFF8BC34A),
@@ -121,98 +122,117 @@ fun BillForm(
         mutableStateOf(0f)
     }
 
-    Surface(
-        modifier = Modifier
-            .padding(2.dp)
-            .fillMaxWidth(),
-        shape = RoundedCornerShape(corner = CornerSize(8.dp)),
-        border = BorderStroke(width = 1.dp, color = Color.LightGray),
-        color = Color(0xFFFFFFFF),
-        elevation = 8.dp
+    Column(
+        modifier = Modifier.padding(12.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
-            modifier = Modifier.padding(6.dp),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.Start
+
+        TopHeader()
+
+        Surface(
+            modifier = Modifier
+                .padding(2.dp)
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(corner = CornerSize(8.dp)),
+            border = BorderStroke(width = 1.dp, color = Color.LightGray),
+            color = Color(0xFFFFFFFF),
+            elevation = 8.dp
         ) {
-            InputField(
-                valueState = totalBillState,
-                labelId = "Enter Bill",
-                enabled = true,
-                isSingleLine = true,
-                onAction = KeyboardActions {
-                    if (!validState) return@KeyboardActions
-                    onValueChange(totalBillState.value.trim())
+            Column(
+                modifier = Modifier.padding(6.dp),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.Start
+            ) {
+                InputField(
+                    valueState = totalBillState,
+                    labelId = "Enter Bill",
+                    enabled = true,
+                    isSingleLine = true,
+                    onAction = KeyboardActions {
+                        if (!validState) return@KeyboardActions
+                        onValueChange(totalBillState.value.trim())
 
-                    keyboardController?.hide()
-                }
-            )
+                        keyboardController?.hide()
+                    }
+                )
 
-            if (validState) {
-                Row(
-                    modifier = Modifier.padding(3.dp),
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    Text(
-                        text = "Split",
-                        modifier = Modifier.align(alignment = Alignment.CenterVertically)
-                    )
-                    Spacer(modifier = Modifier.width(120.dp))
+                if (validState) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 3.dp),
-                        horizontalArrangement = Arrangement.End
+                        modifier = Modifier.padding(3.dp),
+                        horizontalArrangement = Arrangement.Start
                     ) {
-                        RoundIconButton(
-                            imageVector = Icons.Default.Remove,
-                            onClick = { /*TODO*/ })
-
                         Text(
-                            text = "5",
-                            modifier = Modifier
-                                .align(Alignment.CenterVertically)
-                                .padding(start = 9.dp, end = 9.dp)
+                            text = "Split",
+                            modifier = Modifier.align(alignment = Alignment.CenterVertically)
+                        )
+                        Spacer(modifier = Modifier.width(120.dp))
+                        Row(
+                            modifier = Modifier.padding(horizontal = 3.dp),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            RoundIconButton(
+                                imageVector = Icons.Default.Remove,
+                                onClick = { /*TODO*/ })
+
+                            Text(
+                                text = "5",
+                                modifier = Modifier
+                                    .align(Alignment.CenterVertically)
+                                    .padding(start = 9.dp, end = 9.dp)
+                            )
+
+                            RoundIconButton(
+                                imageVector = Icons.Default.Add,
+                                onClick = { /*TODO*/ })
+                        }
+                    }
+
+                    Row(
+                        modifier = Modifier.padding(horizontal = 3.dp, vertical = 12.dp),
+                        horizontalArrangement = Arrangement.Start
+                    ) {
+                        Text(
+                            "Tip",
+                            modifier = Modifier.align(alignment = Alignment.CenterVertically)
                         )
 
-                        RoundIconButton(
-                            imageVector = Icons.Default.Add,
-                            onClick = { /*TODO*/ })
+                        Spacer(modifier = Modifier.width(200.dp))
+
+                        Text(
+                            "$33.00",
+                            modifier = Modifier.align(alignment = Alignment.CenterVertically)
+                        )
                     }
+
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text("33%")
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        //Slider
+                        Slider(
+                            value = sliderPositionState.value,
+                            onValueChange = { newVal ->
+                                sliderPositionState.value = newVal
+                                Log.d("SLIDER", "BillForm: $newVal")
+                            },
+                            modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+                            steps = 5,
+                            onValueChangeFinished = {
+                                Log.d("SLIDER", "BillForm: Finished...")
+                            }
+                        )
+                    }
+
+                } else {
+                    Box {}
                 }
 
-                Row(
-                    modifier = Modifier.padding(horizontal = 3.dp, vertical = 12.dp),
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    Text("Tip", modifier = Modifier.align(alignment = Alignment.CenterVertically))
-
-                    Spacer(modifier = Modifier.width(200.dp))
-
-                    Text(
-                        "$33.00",
-                        modifier = Modifier.align(alignment = Alignment.CenterVertically)
-                    )
-                }
-
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text("33%")
-
-                    Spacer(modifier = Modifier.height(14.dp))
-
-                    //Slider
-                    Slider(value = sliderPositionState.value,
-                        onValueChange = { newVal ->
-                            sliderPositionState.value = newVal
-                            Log.d("SLIDER", "BillForm: $newVal")
-                        })
-                }
-
-            } else {
-                Box {}
             }
-
         }
     }
 }
