@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -34,6 +35,7 @@ import xyz.spacermarcelo.jettipapp.util.calculateTotalPerson
 import xyz.spacermarcelo.jettipapp.util.calculateTotalTip
 import xyz.spacermarcelo.jettipapp.widgets.RoundIconButton
 
+@ExperimentalComposeUiApi
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,30 +87,41 @@ fun TopHeader(totalPerPerson: Double = 132.0) {
     }
 }
 
+@ExperimentalComposeUiApi
 @Preview
 @Composable
 fun MainContent() {
-    BillForm { billAmt ->
-        Log.d("BILL", "MainContent: $billAmt")
-
+    val splitByState = remember {
+        mutableStateOf(1)
     }
+
+    val range = IntRange(start = 1, endInclusive = 100)
+
+    val tipAmountState = remember {
+        mutableStateOf(0.0)
+    }
+
+    val totalPerPersonState = remember {
+        mutableStateOf(0.0)
+    }
+
+    BillForm(
+        range = range,
+        splitByState = splitByState,
+        tipAmountState = tipAmountState,
+        totalPerPersonState = totalPerPersonState
+    ) {}
 
 }
 
-
-@Composable
-fun DefaultPreview() {
-    JetTipAppTheme {
-        MyApp {
-            TopHeader()
-        }
-    }
-}
-
-@OptIn(ExperimentalComposeUiApi::class)
+@ExperimentalComposeUiApi
 @Composable
 fun BillForm(
     modifier: Modifier = Modifier,
+    range: IntRange = 1..100,
+    splitByState: MutableState<Int>,
+    tipAmountState: MutableState<Double>,
+    totalPerPersonState: MutableState<Double>,
     onValueChange: (String) -> Unit = {}
 ) {
     val totalBillState = remember {
@@ -125,20 +138,6 @@ fun BillForm(
 
     val tipPercentage = (sliderPositionState.value * 100).toInt()
 
-    val splitByState = remember {
-        mutableStateOf(1)
-    }
-
-    val range = IntRange(start = 1, endInclusive = 100)
-
-    val tipAmountState = remember {
-        mutableStateOf(0.0)
-    }
-
-    val totalPerPersonState = remember {
-        mutableStateOf(0.0)
-    }
-
     Column(
         modifier = Modifier.padding(12.dp),
         verticalArrangement = Arrangement.Center,
@@ -148,7 +147,7 @@ fun BillForm(
         TopHeader(totalPerPerson = totalPerPersonState.value)
 
         Surface(
-            modifier = Modifier
+            modifier = modifier
                 .padding(2.dp)
                 .fillMaxWidth(),
             shape = RoundedCornerShape(corner = CornerSize(8.dp)),
@@ -176,7 +175,7 @@ fun BillForm(
 
                 if (validState) {
                     Row(
-                        modifier = Modifier.padding(3.dp),
+                        modifier = modifier.padding(3.dp),
                         horizontalArrangement = Arrangement.Start
                     ) {
                         Text(
