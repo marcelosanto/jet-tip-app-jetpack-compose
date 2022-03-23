@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Slider
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -85,14 +86,14 @@ fun TopHeader(totalPerPerson: Double = 132.0) {
 @Preview
 @Composable
 fun MainContent() {
-    BillForm() { billAmt ->
+    BillForm { billAmt ->
         Log.d("BILL", "MainContent: $billAmt")
 
     }
 
 }
 
-@Preview(showBackground = true)
+
 @Composable
 fun DefaultPreview() {
     JetTipAppTheme {
@@ -116,6 +117,9 @@ fun BillForm(
     }
     val keyboardController = LocalSoftwareKeyboardController.current
 
+    val sliderPositionState = remember {
+        mutableStateOf(0f)
+    }
 
     Surface(
         modifier = Modifier
@@ -162,13 +166,51 @@ fun BillForm(
                             imageVector = Icons.Default.Remove,
                             onClick = { /*TODO*/ })
 
+                        Text(
+                            text = "5",
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                                .padding(start = 9.dp, end = 9.dp)
+                        )
+
                         RoundIconButton(
                             imageVector = Icons.Default.Add,
                             onClick = { /*TODO*/ })
                     }
                 }
+
+                Row(
+                    modifier = Modifier.padding(horizontal = 3.dp, vertical = 12.dp),
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    Text("Tip", modifier = Modifier.align(alignment = Alignment.CenterVertically))
+
+                    Spacer(modifier = Modifier.width(200.dp))
+
+                    Text(
+                        "$33.00",
+                        modifier = Modifier.align(alignment = Alignment.CenterVertically)
+                    )
+                }
+
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("33%")
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    //Slider
+                    Slider(value = sliderPositionState.value,
+                        onValueChange = { newVal ->
+                            sliderPositionState.value = newVal
+                            Log.d("SLIDER", "BillForm: $newVal")
+                        })
+                }
+
             } else {
-                Box() {}
+                Box {}
             }
 
         }
