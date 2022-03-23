@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import xyz.spacermarcelo.jettipapp.components.InputField
 import xyz.spacermarcelo.jettipapp.ui.theme.JetTipAppTheme
+import xyz.spacermarcelo.jettipapp.util.calculateTotalTip
 import xyz.spacermarcelo.jettipapp.widgets.RoundIconButton
 
 class MainActivity : ComponentActivity() {
@@ -121,11 +122,17 @@ fun BillForm(
         mutableStateOf(0f)
     }
 
+    val tipPercentage = (sliderPositionState.value * 100).toInt()
+
     val splitByState = remember {
         mutableStateOf(1)
     }
 
     val range = IntRange(start = 1, endInclusive = 100)
+
+    val tipAmountState = remember {
+        mutableStateOf(0.0)
+    }
 
     Column(
         modifier = Modifier.padding(12.dp),
@@ -213,7 +220,7 @@ fun BillForm(
                         Spacer(modifier = Modifier.width(200.dp))
 
                         Text(
-                            "$33.00",
+                            "$${tipAmountState.value}",
                             modifier = Modifier.align(alignment = Alignment.CenterVertically)
                         )
                     }
@@ -222,7 +229,8 @@ fun BillForm(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text("33%")
+
+                        Text("$tipPercentage%")
 
                         Spacer(modifier = Modifier.height(14.dp))
 
@@ -231,7 +239,11 @@ fun BillForm(
                             value = sliderPositionState.value,
                             onValueChange = { newVal ->
                                 sliderPositionState.value = newVal
-                                Log.d("SLIDER", "BillForm: $newVal")
+                                tipAmountState.value =
+                                    calculateTotalTip(
+                                        totalBill = totalBillState.value.toDouble(),
+                                        tipPercentage = tipPercentage
+                                    )
                             },
                             modifier = Modifier.padding(start = 16.dp, end = 16.dp),
                             steps = 5,
@@ -249,3 +261,5 @@ fun BillForm(
         }
     }
 }
+
+
